@@ -61,9 +61,78 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 	}
 	
 	//fill
-	protected void fillColumn(int col, String textureFile, String type) {
-		fillColumn(col, 0, (HEIGHT/SIZE) - 1, textureFile, type,
+	//area
+	protected void fill(String textureFile, String type) {
+		fill(0, 0, WIDTH/SIZE - 1, HEIGHT/SIZE - 1, textureFile, type,
 				new String[] {});
+	}
+	
+	protected void fill(int xStart, int yStart, int xEnd, int yEnd,
+			String textureFile, String type) {
+		fill(xStart, yStart, xEnd, yEnd, textureFile, type, new String[] {});
+	}
+	
+	protected void fill(String textureFile, String type, String[] avoidTypes) {
+		fill(0, 0, WIDTH/SIZE - 1, HEIGHT/SIZE - 1, textureFile, type,
+				avoidTypes);
+	}
+	
+	protected void fill(int xStart, int yStart, int xEnd, int yEnd,
+			String textureFile, String type, String[] avoidTypes) {
+		if(xStart <= xEnd && yStart <= yEnd) {
+			for(int row = yStart; row <= yEnd; row++) {
+				fillRow(row, xStart, xEnd, textureFile, type, avoidTypes);
+			}
+		} else {
+			System.out.println("Invalid start and end coordinates");
+		}
+	}
+	
+	//rows
+	protected void fillRow(int row, String textureFile, String type) {
+		fillRow(row, 0, HEIGHT/SIZE - 1, textureFile, type, new String[] {});
+	}
+	
+	protected void fillRow(int row, int colStart, int colEnd,
+			String textureFile, String type) {
+		fillRow(row, colStart, colEnd, textureFile, type, new String[] {});
+	}
+	
+	protected void fillRow(int row, String textureFile, String type,
+			String[] avoidTypes) {
+		fillRow(row, 0, HEIGHT/SIZE - 1, textureFile, type, avoidTypes);
+	}
+	
+	protected void fillRow(int row, int colStart, int colEnd,
+			String textureFile, String type, String[] avoidTypes) {
+		if(colStart <= colEnd) {
+			float[] checkVertices = {0, 0, SIZE, 0, SIZE, SIZE, SIZE, 0};
+			Polygon check = new Polygon(checkVertices);
+		
+			for(int col = colStart; col <= colEnd; col++) {
+				check.setPosition(col*SIZE, row*SIZE);
+				if(avoidTypes.length == 0 || !BaseActor.isActor(check,
+						avoidTypes, tStage)) {
+					switch(type) {
+					case WALL:
+						new Wall(col, row, textureFile, tStage);
+						break;
+					case FLOOR:
+						new Floor(col, row, textureFile, tStage);
+						break;
+					default:
+						System.out.println("Invalid type");
+					}
+				}
+			}
+		} else {
+			System.out.println("Invalid column start and end");
+		}
+	}
+	
+	//columns
+	protected void fillColumn(int col, String textureFile, String type) {
+		fillColumn(col, 0, HEIGHT/SIZE - 1, textureFile, type, new String[] {});
 	}
 	
 	protected void fillColumn(int col, int rowStart, int rowEnd,
@@ -73,29 +142,28 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 	
 	protected void fillColumn(int col, String textureFile, String type,
 			String[] avoidTypes) {
-		fillColumn(col, 0, (HEIGHT/SIZE) - 1, textureFile, type, avoidTypes);
+		fillColumn(col, 0, HEIGHT/SIZE - 1, textureFile, type, avoidTypes);
 	}
 	
 	protected void fillColumn(int col, int rowStart, int rowEnd,
 			String textureFile, String type, String[] avoidTypes) {
-		float[] checkVertices = {0, 0, SIZE, 0, SIZE, SIZE, SIZE, 0, SIZE};
-		Polygon check = new Polygon(checkVertices);
-		
 		if(rowStart <= rowEnd) {
+			float[] checkVertices = {0, 0, SIZE, 0, SIZE, SIZE, SIZE, 0};
+			Polygon check = new Polygon(checkVertices);
+		
 			for(int row = rowStart; row <= rowEnd; row++) {
 				check.setPosition(col*SIZE, row*SIZE);
-				if(!BaseActor.isActor(check, avoidTypes, tStage)) {
-					if(row == 2) {
-						switch(type) {
-						case WALL:
-							new Wall(col, row, textureFile, tStage);
-							break;
-						case FLOOR:
-							new Floor(col, row, textureFile, tStage);
-							break;
-						default:
-							System.out.println("Invalid type");
-						}
+				if(avoidTypes.length == 0 || !BaseActor.isActor(check,
+						avoidTypes, tStage)) {
+					switch(type) {
+					case WALL:
+						new Wall(col, row, textureFile, tStage);
+						break;
+					case FLOOR:
+						new Floor(col, row, textureFile, tStage);
+						break;
+					default:
+						System.out.println("Invalid type");
 					}
 				}
 			}

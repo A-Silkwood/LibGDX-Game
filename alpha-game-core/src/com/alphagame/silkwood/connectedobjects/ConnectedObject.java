@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-public abstract class ConnectedObject extends BaseActor {
+public class ConnectedObject extends BaseActor {
 	protected static final int ROWS = 8;
 	protected static final int COLS = 8;
 	protected static final int SIZE = BaseScreen.SIZE;
