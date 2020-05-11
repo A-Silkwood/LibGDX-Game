@@ -1,8 +1,8 @@
 package com.alphagame.silkwood.screens;
 
+import com.alphagame.silkwood.actors.ActorLoc;
 import com.alphagame.silkwood.actors.BaseActor;
-import com.alphagame.silkwood.connectedobjects.Floor;
-import com.alphagame.silkwood.connectedobjects.Wall;
+import com.alphagame.silkwood.actors.ConObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -43,18 +43,10 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 		System.out.println("Initializing Terrain");
 		
 		int inc = 1;
-		for(Object wall : BaseActor.getList(Wall.class, tStage,
-				BaseActor.WALL)) {
-			System.out.print("Initalizing Wall" + inc++ + "(");
-			((Wall)wall).loadTexture();
-			System.out.println(")");
-		}
-		inc = 1;
-		for(Object floor : BaseActor.getList(Floor.class, tStage,
-				BaseActor.FLOOR)) {
-			System.out.print("Initalizing Floor" + inc++ + "(");
-			((Floor)floor).loadTexture();
-			System.out.println(")");
+		for(Object conObject : BaseActor.getList(ConObject.class, tStage,
+				ActorLoc.CON_OBJECT.toString())) {
+			System.out.printf("Initializing Connected Object #%d%n", inc++);
+			((ConObject)conObject).loadTexture();
 		}
 		
 		System.out.println("Finished Terrain Initialization");
@@ -62,26 +54,26 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 	
 	//fill
 	//area
-	protected void fill(String textureFile, String type) {
-		fill(0, 0, WIDTH/SIZE - 1, HEIGHT/SIZE - 1, textureFile, type,
+	protected void fill(String textureFile, boolean isWall) {
+		fill(0, 0, WIDTH/SIZE - 1, HEIGHT/SIZE - 1, textureFile, isWall,
 				new String[] {});
 	}
 	
 	protected void fill(int xStart, int yStart, int xEnd, int yEnd,
-			String textureFile, String type) {
-		fill(xStart, yStart, xEnd, yEnd, textureFile, type, new String[] {});
+			String textureFile, boolean isWall) {
+		fill(xStart, yStart, xEnd, yEnd, textureFile, isWall, new String[] {});
 	}
 	
-	protected void fill(String textureFile, String type, String[] avoidTypes) {
-		fill(0, 0, WIDTH/SIZE - 1, HEIGHT/SIZE - 1, textureFile, type,
+	protected void fill(String textureFile, boolean isWall, String[] avoidTypes) {
+		fill(0, 0, WIDTH/SIZE - 1, HEIGHT/SIZE - 1, textureFile, isWall,
 				avoidTypes);
 	}
 	
 	protected void fill(int xStart, int yStart, int xEnd, int yEnd,
-			String textureFile, String type, String[] avoidTypes) {
+			String textureFile, boolean isWall, String[] avoidTypes) {
 		if(xStart <= xEnd && yStart <= yEnd) {
 			for(int row = yStart; row <= yEnd; row++) {
-				fillRow(row, xStart, xEnd, textureFile, type, avoidTypes);
+				fillRow(row, xStart, xEnd, textureFile, isWall, avoidTypes);
 			}
 		} else {
 			System.out.println("Invalid start and end coordinates");
@@ -89,22 +81,22 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 	}
 	
 	//rows
-	protected void fillRow(int row, String textureFile, String type) {
-		fillRow(row, 0, HEIGHT/SIZE - 1, textureFile, type, new String[] {});
+	protected void fillRow(int row, String textureFile, boolean isWall) {
+		fillRow(row, 0, HEIGHT/SIZE - 1, textureFile, isWall, new String[] {});
 	}
 	
 	protected void fillRow(int row, int colStart, int colEnd,
-			String textureFile, String type) {
-		fillRow(row, colStart, colEnd, textureFile, type, new String[] {});
+			String textureFile, boolean isWall) {
+		fillRow(row, colStart, colEnd, textureFile, isWall, new String[] {});
 	}
 	
-	protected void fillRow(int row, String textureFile, String type,
+	protected void fillRow(int row, String textureFile, boolean isWall,
 			String[] avoidTypes) {
-		fillRow(row, 0, HEIGHT/SIZE - 1, textureFile, type, avoidTypes);
+		fillRow(row, 0, HEIGHT/SIZE - 1, textureFile, isWall, avoidTypes);
 	}
 	
 	protected void fillRow(int row, int colStart, int colEnd,
-			String textureFile, String type, String[] avoidTypes) {
+			String textureFile, boolean isWall, String[] avoidTypes) {
 		if(colStart <= colEnd) {
 			float[] checkVertices = {0, 0, SIZE, 0, SIZE, SIZE, SIZE, 0};
 			Polygon check = new Polygon(checkVertices);
@@ -113,16 +105,7 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 				check.setPosition(col*SIZE, row*SIZE);
 				if(avoidTypes.length == 0 || !BaseActor.isActor(check,
 						avoidTypes, tStage)) {
-					switch(type) {
-					case WALL:
-						new Wall(col, row, textureFile, tStage);
-						break;
-					case FLOOR:
-						new Floor(col, row, textureFile, tStage);
-						break;
-					default:
-						System.out.println("Invalid type");
-					}
+					new ConObject(col, row, textureFile, isWall, tStage);
 				}
 			}
 		} else {
@@ -131,22 +114,22 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 	}
 	
 	//columns
-	protected void fillColumn(int col, String textureFile, String type) {
-		fillColumn(col, 0, HEIGHT/SIZE - 1, textureFile, type, new String[] {});
+	protected void fillColumn(int col, String textureFile, boolean isWall) {
+		fillColumn(col, 0, HEIGHT/SIZE - 1, textureFile, isWall, new String[] {});
 	}
 	
 	protected void fillColumn(int col, int rowStart, int rowEnd,
-			String textureFile, String type) {
-		fillColumn(col, rowStart, rowEnd, textureFile, type, new String[] {});
+			String textureFile, boolean isWall) {
+		fillColumn(col, rowStart, rowEnd, textureFile, isWall, new String[] {});
 	}
 	
-	protected void fillColumn(int col, String textureFile, String type,
+	protected void fillColumn(int col, String textureFile, boolean isWall,
 			String[] avoidTypes) {
-		fillColumn(col, 0, HEIGHT/SIZE - 1, textureFile, type, avoidTypes);
+		fillColumn(col, 0, HEIGHT/SIZE - 1, textureFile, isWall, avoidTypes);
 	}
 	
 	protected void fillColumn(int col, int rowStart, int rowEnd,
-			String textureFile, String type, String[] avoidTypes) {
+			String textureFile, boolean isWall, String[] avoidTypes) {
 		if(rowStart <= rowEnd) {
 			float[] checkVertices = {0, 0, SIZE, 0, SIZE, SIZE, SIZE, 0};
 			Polygon check = new Polygon(checkVertices);
@@ -155,16 +138,7 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 				check.setPosition(col*SIZE, row*SIZE);
 				if(avoidTypes.length == 0 || !BaseActor.isActor(check,
 						avoidTypes, tStage)) {
-					switch(type) {
-					case WALL:
-						new Wall(col, row, textureFile, tStage);
-						break;
-					case FLOOR:
-						new Floor(col, row, textureFile, tStage);
-						break;
-					default:
-						System.out.println("Invalid type");
-					}
+					new ConObject(col, row, textureFile, isWall, tStage);
 				}
 			}
 		} else {

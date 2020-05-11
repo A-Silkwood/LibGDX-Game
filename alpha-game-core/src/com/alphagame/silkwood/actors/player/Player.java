@@ -3,7 +3,7 @@ package com.alphagame.silkwood.actors.player;
 import java.awt.geom.Point2D.Float;
 
 import com.alphagame.silkwood.actors.BaseActor;
-import com.alphagame.silkwood.connectedobjects.Wall;
+import com.alphagame.silkwood.actors.ConObject;
 import com.alphagame.silkwood.screens.BaseScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -232,7 +232,7 @@ public class Player extends BaseActor {
 		default:
 		}
 		
-		return Wall.isWall(check, tStage);
+		return ConObject.isConObject(check, true, tStage);
 	}
 	
 	/**
