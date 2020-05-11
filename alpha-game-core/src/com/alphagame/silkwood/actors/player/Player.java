@@ -28,24 +28,10 @@ public class Player extends BaseActor {
 	private Arrow downArrow;
 	private Arrow leftArrow;
 	private int firstPressed;
-	public static final int UP_ARROW = 1;
-	public static final int RIGHT_ARROW = 2;
-	public static final int DOWN_ARROW = 4;
-	public static final int LEFT_ARROW = 8;
-	//directions
-	public static final Vector2 UP = new Vector2(0, 1);
-	public static final Vector2 RIGHT = new Vector2(1, 0);
-	public static final Vector2 DOWN = new Vector2(0, -1);
-	public static final Vector2 LEFT = new Vector2(-1, 0);
-	
 	
 	//textures
 	private Animation<TextureRegion> playerTexture;
 	private Animation<TextureRegion> backgroundTexture;
-	private Animation<TextureRegion> upTexture;
-	private Animation<TextureRegion> rightTexture;
-	private Animation<TextureRegion> downTexture;
-	private Animation<TextureRegion> leftTexture;
 	
 	//keys
 	private static final int[] KEYS = {Keys.W, Keys.D, Keys.S, Keys.A};
@@ -64,10 +50,10 @@ public class Player extends BaseActor {
 		this.tStage = tStage;
 		
 		//initialize actors that help create the player
-		upArrow = new Arrow(x, y, aStage, UP_ARROW);
-		rightArrow = new Arrow(x, y, aStage, RIGHT_ARROW);
-		downArrow = new Arrow(x, y, aStage, DOWN_ARROW);
-		leftArrow = new Arrow(x, y, aStage, LEFT_ARROW);
+		upArrow = new Arrow(x, y, aStage, Direction.UP.getValue());
+		rightArrow = new Arrow(x, y, aStage, Direction.RIGHT.getValue());
+		downArrow = new Arrow(x, y, aStage, Direction.DOWN.getValue());
+		leftArrow = new Arrow(x, y, aStage, Direction.LEFT.getValue());
 		player = new BaseActor(x, y, aStage);	//must be last to be on top
 		
 		//load textures
@@ -75,14 +61,10 @@ public class Player extends BaseActor {
 		backgroundTexture = loadTexture("playerbg.png");
 		setAnimation(backgroundTexture);
 		//arrows used by the character
-		downTexture = loadTexture("directions.png", 2, 2, 0, 0);
-		downArrow.setAnimation(downTexture);
-		leftTexture = loadTexture("directions.png", 2, 2, 0, 1);
-		leftArrow.setAnimation(leftTexture);
-		rightTexture = loadTexture("directions.png", 2, 2, 1, 0);
-		rightArrow.setAnimation(rightTexture);
-		upTexture = loadTexture("directions.png", 2, 2, 1, 1);
-		upArrow.setAnimation(upTexture);
+		upArrow.setAnimation(Direction.UP.getTexture());
+		rightArrow.setAnimation(Direction.RIGHT.getTexture());
+		downArrow.setAnimation(Direction.DOWN.getTexture());
+		leftArrow.setAnimation(Direction.LEFT.getTexture());
 		//main texture for the character itself
 		playerTexture = loadTexture("player.png");
 		player.setAnimation(playerTexture);
@@ -124,23 +106,24 @@ public class Player extends BaseActor {
 				if(Gdx.input.isKeyJustPressed(key)) {
 					switch(key) {
 					case Keys.W:
-						if(!willCollide(UP_ARROW)) {
-							activateArrow(upArrow,UP_ARROW);
+						if(!willCollide(Direction.UP.getValue())) {
+							activateArrow(upArrow,Direction.UP.getValue());
 						}
 						break;
 					case Keys.D:
-						if(!willCollide(RIGHT_ARROW)) {
-							activateArrow(rightArrow,RIGHT_ARROW);
+						if(!willCollide(Direction.RIGHT.getValue())) {
+							activateArrow(rightArrow,Direction.RIGHT.
+									getValue());
 						}
 						break;
 					case Keys.S:
-						if(!willCollide(DOWN_ARROW)) {
-							activateArrow(downArrow,DOWN_ARROW);
+						if(!willCollide(Direction.DOWN.getValue())) {
+							activateArrow(downArrow,Direction.DOWN.getValue());
 						}
 						break;
 					case Keys.A:
-						if(!willCollide(LEFT_ARROW)) {
-							activateArrow(leftArrow,LEFT_ARROW);
+						if(!willCollide(Direction.LEFT.getValue())) {
+							activateArrow(leftArrow,Direction.LEFT.getValue());
 						}
 						break;
 					default:
@@ -150,22 +133,22 @@ public class Player extends BaseActor {
 				switch(key) {
 				case Keys.W:
 					if(upArrow.isActive()) {
-						deactivateArrow(upArrow,UP_ARROW);
+						deactivateArrow(upArrow,Direction.UP.getValue());
 					}
 					break;
 				case Keys.D:
 					if(rightArrow.isActive()) {
-						deactivateArrow(rightArrow,RIGHT_ARROW);
+						deactivateArrow(rightArrow,Direction.RIGHT.getValue());
 					}
 					break;
 				case Keys.S:
 					if(downArrow.isActive()) {
-						deactivateArrow(downArrow,DOWN_ARROW);
+						deactivateArrow(downArrow,Direction.DOWN.getValue());
 					}
 					break;
 				case Keys.A:
 					if(leftArrow.isActive()) {
-						deactivateArrow(leftArrow,LEFT_ARROW);
+						deactivateArrow(leftArrow,Direction.LEFT.getValue());
 					}
 					break;
 				default:
@@ -217,16 +200,16 @@ public class Player extends BaseActor {
 		//sets up polygon to test overlap with wall collisions
 		Polygon check = getBoundary();
 		switch(arrowValue) {
-		case UP_ARROW:
+		case 1:
 			check.translate(0, SIZE);
 			break;
-		case RIGHT_ARROW:
+		case 2:
 			check.translate(SIZE, 0);
 			break;
-		case DOWN_ARROW:
+		case 4:
 			check.translate(0, -SIZE);
 			break;
-		case LEFT_ARROW:
+		case 8:
 			check.translate(-SIZE, 0);
 			break;
 		default:
@@ -246,19 +229,19 @@ public class Player extends BaseActor {
 		//1-key moves
 		case 1:
 			System.out.println("1(Move-Up)");
-			move(UP);
+			move(Direction.UP.getDirection());
 			break;
 		case 2:
 			System.out.println("2(Move-Right)");
-			move(RIGHT);
+			move(Direction.RIGHT.getDirection());
 			break;
 		case 4:
 			System.out.println("4(Move-Down)");
-			move(DOWN);
+			move(Direction.DOWN.getDirection());
 			break;
 		case 8:
 			System.out.println("8(Move-Left)");
-			move(LEFT);
+			move(Direction.LEFT.getDirection());
 			break;
 		//2-key moves
 		//corner
@@ -321,16 +304,16 @@ public class Player extends BaseActor {
 		int ability = 0;
 		//adds to ability if the arrow was active
 		if(downArrow.isActive()) {
-			ability += DOWN_ARROW;
+			ability += Direction.DOWN.getValue();
 		}
 		if(leftArrow.isActive()) {
-			ability += LEFT_ARROW;
+			ability += Direction.LEFT.getValue();
 		}
 		if(rightArrow.isActive()) {
-			ability += RIGHT_ARROW;
+			ability += Direction.RIGHT.getValue();
 		}
 		if(upArrow.isActive()) {
-			ability += UP_ARROW;
+			ability += Direction.UP.getValue();
 		}
 		
 		return ability;

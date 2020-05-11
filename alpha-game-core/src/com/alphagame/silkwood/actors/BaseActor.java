@@ -18,14 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 public class BaseActor extends Actor {
-	//terrain
-	public static final String WALL = "com.alphagame.silkwood.connectedobjects.Wall";
-	public static final String FLOOR = "com.alphagame.silkwood.connectedobjects.Floor";
-	//player
-	public static final String PLAYER = "com.alphagame.silkwood.player.Player";
-	//enemies
-	//spacer
-	
 	private static final float UNIT_VECTOR_MAG = 1;
 	
 	//animation

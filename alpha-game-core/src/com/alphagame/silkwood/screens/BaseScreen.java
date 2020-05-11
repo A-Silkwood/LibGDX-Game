@@ -17,9 +17,6 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 	public static final int HEIGHT = 576;
 	public static final int SIZE = 32;
 	
-	protected static final String WALL = "wall";
-	protected static final String FLOOR = "floor";
-	
 	//stages
 	public Stage tStage;	//place terrain
 	public Stage aStage;	//place characters, enemies, etc

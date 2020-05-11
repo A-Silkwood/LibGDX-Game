@@ -30,17 +30,17 @@ public class Arrow extends BaseActor {
 		super(x, y, stage);
 		
 		switch(direction) {
-			case Player.UP_ARROW:
-				arrowDirection = Player.UP;
+			case 1:
+				arrowDirection = Direction.UP.getDirection();
 				break;
-			case Player.RIGHT_ARROW:
-				arrowDirection = Player.RIGHT;
+			case 2:
+				arrowDirection = Direction.RIGHT.getDirection();
 				break;
-			case Player.DOWN_ARROW:
-				arrowDirection = Player.DOWN;
+			case 4:
+				arrowDirection = Direction.DOWN.getDirection();
 				break;
-			case Player.LEFT_ARROW:
-				arrowDirection = Player.LEFT;
+			case 8:
+				arrowDirection = Direction.LEFT.getDirection();
 				break;
 			default:
 				arrowDirection = new Vector2();
