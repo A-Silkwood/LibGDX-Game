@@ -12,26 +12,19 @@ public abstract class BaseGame extends Game {
 	public static LabelStyle labelStyle;
 	public static TextButtonStyle textButtonStyle;
 	
-	/**
-	 * Creates the game
-	 */
+	/** Creates a game object */
 	public BaseGame() {
 		game = this;
 	}
 	
-	/**
-	 * Initializes input on creation
-	 */
+	/** Actions performed on creation */
 	public void create() {
 		InputMultiplexer input = new InputMultiplexer();
 		Gdx.input.setInputProcessor(input);
 	}
 	
-	/**
-	 * Select what screen to use
-	 * 
-	 * @param screen	Screen to switch to
-	 */
+	/** Select what screen to use
+	 * @param screen Screen to start using */
 	public static void setActiveScreen(BaseScreen screen) {
 		game.setScreen(screen);
 	}

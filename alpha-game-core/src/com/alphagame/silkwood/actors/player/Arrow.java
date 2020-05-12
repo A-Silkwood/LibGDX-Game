@@ -3,29 +3,29 @@ package com.alphagame.silkwood.actors.player;
 import java.awt.geom.Point2D.Float;
 
 import com.alphagame.silkwood.actors.BaseActor;
+import com.alphagame.silkwood.actors.Direction;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Arrow extends BaseActor {
-	//movement
+	/* constants that affect how the arrow moves */
 	public static final int SPEED = 150;
 	public static final int SIZE = 25;
 	
-	//arrow's direction
+	/* vector in the direction the arrow faces */
 	private final Vector2 arrowDirection;
 	
-	//activation
+	/* variables to handle if the arrow is active or not */
 	private boolean active;
 	private Float inactiveLocation;
 	private Float activeLocation;
 	
-	/**
-	 * Constructor for an arrow used by the player
-	 * 
-	 * @param x	Starting x-coordinate
-	 * @param y	Starting y-coordinate
-	 * @param stage	Stage to place the character
-	 */
+
+	/** Creates an arrow at the given place
+	 * @param x X-coordinate
+	 * @param y Y-coordinate
+	 * @param stage Stage to place the arrow in
+	 * @param direction Direction the arrow faces */
 	public Arrow(float x, float y, Stage stage, int direction) {
 		super(x, y, stage);
 		
@@ -51,55 +51,34 @@ public class Arrow extends BaseActor {
 		active = false;
 	}
 	
-	/**
-	 * Sets the arrow in proper direction when turned on or off
-	 * 
-	 * @param direction	Direction to go when active and go the opposite way
-	 * 					while inactive
-	 */
+	/** Actions performed each tick
+	 * @param delta Time since last call */
+	public void act(float delta) {
+		super.act(delta);
+	}
+	
+	/** Toggles the arrow between active and inactive */
 	public void toggleActive() {
 		if(!active) {
-			//when activated it goes with the direction
 			active = true;
 			moveTo(activeLocation, SPEED);
 		} else {
-			//when deactivated it goes in the opposite direction of direction
 			active = false;
 			moveTo(inactiveLocation, SPEED);
 		}
 	}
 	
-	/**
-	 * Tests if the arrow is active or not
-	 * 
-	 * @return	Whether the arrow is active
-	 */
 	public boolean isActive() {
 		return active;
 	}
 	
-	/**
-	 * Actions to take each tick
-	 */
-	public void act(float delta) {
-		super.act(delta);
-	}
-	
-	/**
-	 * Resets the arrow to all its default values, but position
-	 */
+	/** Resets the arrow to its default state */
 	public void reset() {
 		moving = false;
 		active = false;
-	}
-	
-	/**
-	 * Resets the locations for when the arrow is active or inactive
-	 */
-	public void resetLocations() {
+		/** Resets the active and inactive locations based on position*/       
 		inactiveLocation.setLocation(getX(), getY());
-		activeLocation.setLocation(getX() + (arrowDirection.x *
-				SIZE), getY() + (arrowDirection.y *
-				SIZE));
+		activeLocation.setLocation(getX() + (arrowDirection.x * SIZE),
+				getY() + (arrowDirection.y * SIZE));
 	}
 }

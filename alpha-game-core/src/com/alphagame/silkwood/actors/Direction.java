@@ -1,10 +1,7 @@
-package com.alphagame.silkwood.actors.player;
+package com.alphagame.silkwood.actors;
 
 import java.awt.Point;
 
-import com.alphagame.silkwood.actors.BaseActor;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public enum Direction {
@@ -13,19 +10,24 @@ public enum Direction {
 	DOWN(new Vector2(0, -1), 4, new Point(0, 0)),
 	LEFT(new Vector2(-1, 0), 8, new Point(0, 1));
 	
-	private Animation<TextureRegion> texture;
+	private Point sheetLocation;
 	private Vector2 direction;
 	private int value;
 	
+	/** Initializes a Direction
+	 * <p>
+	 * Directions are meant to be associated with actors that face a direction
+	 * @param dir Direction as a vector
+	 * @param val Value associated with the vector
+	 * @param location Location of sprite based on template */
 	private Direction(Vector2 dir, int val, Point location) {
-		texture = BaseActor.loadTexture("directions.png", 2, 2, location.x,
-				location.y);
+		sheetLocation = location;
 		direction = dir;
 		value = val;
 	}
 	
-	public Animation<TextureRegion> getTexture(){
-		return texture;
+	public Point getSheetLocation() {
+		return sheetLocation;
 	}
 	
 	public Vector2 getDirection() {

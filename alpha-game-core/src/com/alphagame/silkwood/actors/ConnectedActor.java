@@ -9,11 +9,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-public class ConObject extends BaseActor {
+public class ConnectedActor extends BaseActor {
+	/** variables that are used for position and collision */
 	protected static final int ROWS = 8;
 	protected static final int COLS = 8;
 	protected static final int SIZE = BaseScreen.SIZE;
 	
+	/** variables for texture and animation */
+	protected String textureFile;
+	protected Animation<TextureRegion> texture;
+	protected boolean[][] nearbyActors;
+	protected boolean isWall;
+	
+	/** used for checking nearObjects */
 	public enum Side {
 		TOP(2, 1),
 		RIGHT(1, 2),
@@ -26,6 +34,9 @@ public class ConObject extends BaseActor {
 		
 		private Point point;
 		
+		/** Initializes a Side
+		 * @param x X-Coordinate
+		 * @param y Y-Coordinate */
 		private Side(int x, int y) {
 			point = new Point(x, y);
 		}
@@ -35,49 +46,56 @@ public class ConObject extends BaseActor {
 		}
 	}
 	
-	protected String textureFile;
-	protected Animation<TextureRegion> texture;
-	protected boolean[][] nearObjects;
-	protected boolean isWall;
-	
-	public ConObject(float x, float y, String textureFile, boolean isWall,
+	/** Creates a connected actor with the following components
+	 * <p>
+	 * A connected actor is an actor that can seamlessly connect [visually] to
+	 * other connected actors. It will connect only to connected actors that
+	 * have the same isWall value
+	 * </p>
+	 * <p>
+	 * The actor needs a sprite sheet of a specific layout to work properly
+	 * @param x	X-coordinate
+	 * @param y Y-coordinate
+	 * @param textureFile Sprite sheet to pull texture from
+	 * @param isWall If this actor should be treated as a wall
+	 * @param stage Stage to place actor on */
+	public ConnectedActor(float x, float y, String textureFile, boolean isWall,
 			Stage stage) {
 		super(x*SIZE, y*SIZE, stage);
 		
+		/** set the actor to its default variables */
 		this.textureFile = textureFile;
 		this.isWall = isWall;
-		
 		setSize(SIZE, SIZE);
 		setOrigin(SIZE/2, SIZE/2);
 		setBoundary();
 	}
 	
-	/**
-	 * Loads the proper texture based on surrounding walls
-	 */
+	/** Loads the proper sprite based on nearby connected actors
+	 * <p>
+	 * Should be called once all connected actors have been initialized */
 	public void loadTexture() {
 		Point location = findConnectedTexture();
 		texture = loadTexture(textureFile, ROWS, COLS, location.x, location.y);
 		setAnimation(texture);
 	}
 	
-	/**
-	 * Finds the proper object texture to use from a sprite sheets based on the
-	 * surrounding objects.
-	 * 
-	 * @return A point that corresponds to the proper sprite on a sprite sheet
-	 */
+	/** Gets the row and column of the sprite that should be used from the
+	 * sprite sheet
+	 * @return A point to where the sprite is on the sheet (row, column) */
 	private Point findConnectedTexture() {
-		getNearbyObjects(isWall);
+		updateNearbyActors(isWall);
 		int row = -1;
 		int col = -1;
 		
+		/** amount of connected actors directly touching */
 		int touching = 0;
 		if(checkSide(Side.TOP)) {touching++;}
 		if(checkSide(Side.RIGHT)) {touching++;}
 		if(checkSide(Side.BOTTOM)) {touching++;}
 		if(checkSide(Side.LEFT)) {touching++;}
 		
+		/** gets the correct row and column */
 		switch(touching) {
 		case 0:
 			row = 0; col = 0;
@@ -159,11 +177,13 @@ public class ConObject extends BaseActor {
 			}
 			break;
 		case 4:
+			/** amount of connected actors diagonally touching */
 			int emptyCorners = 0;
 			if(!checkSide(Side.TOP_RIGHT)) {emptyCorners++;}
 			if(!checkSide(Side.BOTTOM_RIGHT)) {emptyCorners++;}
 			if(!checkSide(Side.BOTTOM_LEFT)) {emptyCorners++;}
 			if(!checkSide(Side.TOP_LEFT)) {emptyCorners++;}
+			
 			switch(emptyCorners) {
 			case 0:
 				row = 0; col = 1;
@@ -205,37 +225,50 @@ public class ConObject extends BaseActor {
 		default:
 			row = 3; col = 7;
 		}
-
+		
+		/** row: 3 | col: 7 means something went wrong */
 		return new Point(row,col);
 	}
 
-	/**
-	 * Finds what sides are touching certain objects given
-	 * 
-	 * @param types	Types of objects to check for
-	 */
-	public void getNearbyObjects(boolean lookForWalls) {
-		nearObjects = new boolean[3][3];
+	/** Updates nearbyActors with the current connected actors
+	 * @param lookForWalls If nearby actors need to be walls or not */
+	public void updateNearbyActors(boolean lookForWalls) {
+		nearbyActors = new boolean[3][3];
 		float[] boundaryVertices = getBoundary().getTransformedVertices();
 		float size = getWidth();
 		Polygon check;
 		
-		for(int i = 0; i < nearObjects.length; i++) {
-			for(int j = 0; j < nearObjects[i].length; j++) {
+		for(int i = 0; i < nearbyActors.length; i++) {
+			for(int j = 0; j < nearbyActors[i].length; j++) {
 				check = new Polygon(boundaryVertices);
 				check.translate(size*(j - 1), size*(i - 1));
-				nearObjects[i][j] = isConObject(check,lookForWalls,getStage());
+				nearbyActors[i][j] = isConnectedActor(check, lookForWalls,
+						getStage());
 			}
 		}
 	}
 	
-	public static boolean isConObject(Polygon check, boolean lookForWalls,
+	/** If a side of the actor had a connected actor
+	 * @param side Side to check
+	 * @return If the side had a connected actor */
+	private boolean checkSide(Side side) {
+		Point check = side.getPoint();
+		return nearbyActors[check.x][check.y];
+	}
+	
+	/** Checks an area for connected actors
+	 * @param check	Area to look for connected actors
+	 * @param lookForWalls If connected actors found need to be walls or not
+	 * @param stage Stage to search for connected actors
+	 * @return If a connected actor was found */
+	public static boolean isConnectedActor(Polygon check, boolean lookForWalls,
 			Stage stage) {
-		for(Object conObject : BaseActor.getList(ConObject.class, stage,
-				ActorLoc.CON_OBJECT.toString())) {
-			if(lookForWalls == ((ConObject)conObject).isWall() && check.
-					getBoundingRectangle().overlaps(((BaseActor)conObject).
-					getBoundary().getBoundingRectangle())) {
+		for(Object connectedActor : BaseActor.getList(ConnectedActor.class,
+				stage, ActorLocation.CONNECTED_ACTOR.toString())) {
+			if(lookForWalls == ((ConnectedActor)connectedActor).isWall() &&
+					check.getBoundingRectangle().overlaps(
+					((BaseActor)connectedActor).getBoundary().
+					getBoundingRectangle())) {
 				return true;
 			}
 		}
@@ -244,10 +277,5 @@ public class ConObject extends BaseActor {
 	
 	public boolean isWall() {
 		return isWall;
-	}
-
-	private boolean checkSide(Side side) {
-		Point check = side.getPoint();
-		return nearObjects[check.x][check.y];
 	}
 }

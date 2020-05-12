@@ -1,15 +1,18 @@
 package com.alphagame.silkwood.actors;
 
-public enum ActorLoc {
+public enum ActorLocation {
 	BASE_ACTOR("com.alphagame.silkwood.actors.BaseActor"),
-	CON_OBJECT("com.alphagame.silkwood.actors.ConObject"),
-	//player
+	CONNECTED_ACTOR("com.alphagame.silkwood.actors.ConnectedActor"),
 	PLAYER("com.alphagame.silkwood.actors.player.Player"),
 	ARROW("com.alphagame.silkwood.actors.player.Arrow");
 	
 	private String location;
 	
-	private ActorLoc(String loc) {
+	/** Initializes an ActorLocation(ActorLoc)
+	 * <p>
+	 * The location points to the file that contains the code for the actor
+	 * @param loc Location of the actor in string format */
+	private ActorLocation(String loc) {
 		location = loc;
 	}
 	
